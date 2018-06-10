@@ -1,6 +1,6 @@
 // Enemies our player must avoid
 class Enemy {
-  constructor(x, y, speed) {
+  constructor(x, y, speedFactor) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -9,16 +9,23 @@ class Enemy {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     this.y = y;
-    this.speed = speed;
+    this.speedFactor = speedFactor;
   }
   // Update the enemy's position, required method for game
   // Parameter: dt, a time delta between ticks
   update(dt) {
-      this.x += dt * this.speed;
+      this.x += dt * this.speedFactor;
+      this.checkForCollision();
   }
   // Draw the enemy on the screen, required method for game
   render() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+  // Check if enemy and player are occupying the same space
+  checkForCollision() {
+    if(this.x >= (player.getXCoordinate() - 50) && this.x < (player.getXCoordinate() + 50) && this.y === player.getYCoordinate()) {
+      location.reload();
+    }
   }
 }
 
@@ -29,20 +36,28 @@ class Player {
   constructor(x, y) {
     // The image/sprite for our player
     this.sprite = 'images/char-boy.png';
-    // canvas coordinates
+    // Canvas coordinates
     this.x = x;
     this.y = y;
-    // individual moves sizes based on convas coordinates
+    // Individual moves sizes based on convas coordinates
     this.horizontalMoveSize = 101;
     this.verticalMoveSize = 80;
-    // starting positions based on x y graph
+    // Starting positions based on 5 x 6 xy graph
     this.verticalPosition = -2;
     this.horizontalPosition = 0;
-    // boundary graph values
+    // Boundary graph values
     this.maxVerticalPosition = 3;
     this.minVerticalPosition = -2;
     this.maxHorizontalPosition = 2;
     this.minHorizontalPosition = -2;
+  }
+  // Get X coordinate of player
+  getXCoordinate() {
+    return this.x;
+  }
+  // Get Y coordinate of player
+  getYCoordinate() {
+    return this.y;
   }
   // Update the player's position
   // Parameter: keycode, the arrow key pressed
@@ -52,9 +67,7 @@ class Player {
         this.verticalPosition ++;
         if(this.verticalPosition <= 3){
           this.y -= this.verticalMoveSize;
-        } else {
-          // reset vertical position tracker to max allowed value
-          this.verticalPosition = this.maxVerticalPosition;
+          this.checkForWin();
         }
         break;
       case 'down':
@@ -62,7 +75,7 @@ class Player {
         if(this.verticalPosition >= -2){
           this.y += this.verticalMoveSize;
         } else {
-          // reset vertical position tracker to min allowed value
+          // Reset vertical position tracker to min allowed value
           this.verticalPosition = this.minVerticalPosition;
         }
         break;
@@ -71,7 +84,7 @@ class Player {
         if(this.horizontalPosition >= -2){
           this.x -= this.horizontalMoveSize;
         } else {
-          // reset horizontal position tracker to min allowed value
+          // Reset horizontal position tracker to min allowed value
           this.horizontalPosition = this.minHorizontalPosition;
         }
         break;
@@ -80,7 +93,7 @@ class Player {
         if(this.horizontalPosition <= 2){
           this.x += this.horizontalMoveSize;
         } else {
-          // reset horizontal postion tracker max allowed value
+          // Reset horizontal postion tracker max allowed value
           this.horizontalPosition = this.maxHorizontalPosition;
         }
         break;
@@ -91,17 +104,24 @@ class Player {
   render() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
-  // call update method
+  // Call update method
   handleInput(keycode) {
     if(keycode != null){
       this.update(keycode);
+    }
+  }
+  // Check to determine win
+  checkForWin() {
+    if(this.verticalPosition === 3){
+      // Player wins; reset game
+      location.reload();
     }
   }
 }
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-const allEnemies = generateEnemies(100);
+const allEnemies = generateEnemies(10);
 
 
 // Place the player object in a variable called player
@@ -126,12 +146,12 @@ function generateEnemies(count){
   let enemyArray = [];
   let xPosition = 0;
   let randomIndex = 0;
-  const yPositions = [60, 142.5, 225];
-  const speeds = [450, 150, 300];
+  const yPositions = [55, 135, 215];
+  const speedFactors = [450, 150, 300];
   for (let x = 0; x < count; x++){
     for (let y = 2; y >= 0; y--) {
       //randomIndex = generateRandomNumber(0, 2);
-      enemyArray.push(new Enemy(xPosition, yPositions[y], speeds[y]));
+      enemyArray.push(new Enemy(xPosition, yPositions[y], speedFactors[y]));
     }
     xPosition -= 500;
   }
