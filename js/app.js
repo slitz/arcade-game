@@ -135,7 +135,7 @@ class Player {
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-const allEnemies = generateEnemies(10);
+const allEnemies = generateEnemies(100);
 
 
 // Place the player object in a variable called player
