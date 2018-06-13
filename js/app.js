@@ -9,6 +9,7 @@ class Enemy {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     this.y = y;
+    // A factor used to
     this.speedFactor = speedFactor;
   }
   // Update the enemy's position, required method for game
@@ -23,6 +24,7 @@ class Enemy {
   }
   // Check if enemy and player are occupying the same space
   checkForCollision() {
+    // If the player and enemy's y coordinates match and their x coordinates fall wtihin a range, a collision occurs
     if(this.x >= (player.getXCoordinate() - 50) && this.x < (player.getXCoordinate() + 50) && this.y === player.getYCoordinate()) {
       location.reload();
     }
@@ -113,9 +115,21 @@ class Player {
   // Check to determine win
   checkForWin() {
     if(this.verticalPosition === 3){
-      // Player wins; reset game
-      location.reload();
+      this.displayDialog();
     }
+  }
+  // Display a dialog after win
+  displayDialog() {
+    $(".popup").dialog({
+      buttons: {
+        "Play again": function() {
+          location.reload();
+        },
+        Quit: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    })
   }
 }
 
@@ -147,12 +161,15 @@ function generateEnemies(count){
   let xPosition = 0;
   let randomIndex = 0;
   const yPositions = [55, 135, 215];
-  const speedFactors = [450, 150, 300];
+  //const speedFactors = [450, 150, 300];
+  const speedFactors = [150, 200, 250, 300, 350, 400, 450];
   for (let x = 0; x < count; x++){
     for (let y = 2; y >= 0; y--) {
-      //randomIndex = generateRandomNumber(0, 2);
-      enemyArray.push(new Enemy(xPosition, yPositions[y], speedFactors[y]));
+      // Use a random index to determine which speed factor to use
+      randomIndex = generateRandomNumber(0, speedFactors.length - 1);
+      enemyArray.push(new Enemy(xPosition, yPositions[y], speedFactors[randomIndex]));
     }
+    // Create space between enemies in the same row
     xPosition -= 500;
   }
   return enemyArray;
